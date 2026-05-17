@@ -7,8 +7,9 @@
 UENUM(BlueprintType)
 enum class EStoryBeat : uint8
 {
-	CarBreakdown,    // Opening: Johnny's car dies outside Skopje.
-	OnTheRoad,       // Trekking toward Veles. Patrol enemies. Food pickups.
+	Driving,         // Opening playable: Johnny is driving toward Veles.
+	CarBreakdown,    // The car sputters and dies on the side of the road.
+	OnTheRoad,       // Trekking toward Veles on foot. Patrol enemies. Food pickups.
 	GangsterChase,   // Mid-game: loan-shark goons chase him.
 	ArrivedTooLate,  // Reaches Veles after the meeting.
 	BossFires,       // Cutscene: boss fires him.

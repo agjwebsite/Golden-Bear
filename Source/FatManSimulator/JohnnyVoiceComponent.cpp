@@ -66,6 +66,24 @@ void UJohnnyVoiceComponent::SeedDefaultLines()
 	AddIfMissing(EJohnnyLine::BossFires,    { TEXT("You're firing me? Over a meeting?! I RAN here!"), }, 999.f);
 	AddIfMissing(EJohnnyLine::Jackpot,      { TEXT("A MILLION?! A MILLION DOLLARS?!"), }, 999.f);
 	AddIfMissing(EJohnnyLine::BrokeAgain,   { TEXT("Where did it all go... oh. The kebapi. Right."), }, 999.f);
+
+	AddIfMissing(EJohnnyLine::CarSputter, {
+		TEXT("Come on. Come on come on COME ON."),
+		TEXT("Don't you dare. Don't you DARE."),
+		TEXT("Not now. Anything but now."),
+		TEXT("I will buy you new spark plugs, I swear on my mother."),
+	}, 1.0f);
+
+	AddIfMissing(EJohnnyLine::CarDying, {
+		TEXT("Oh no. Oh no no no. That sound. THAT sound."),
+		TEXT("You old piece of garbage..."),
+	}, 999.f);
+
+	AddIfMissing(EJohnnyLine::CarDeadResignation, {
+		TEXT("Of course. Of course this happens to me."),
+		TEXT("Well. I guess I'm walking."),
+		TEXT("Veles. On foot. In these shoes. With these legs."),
+	}, 999.f);
 }
 
 void UJohnnyVoiceComponent::Say(EJohnnyLine Kind)

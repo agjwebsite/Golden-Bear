@@ -19,6 +19,7 @@ Source/
   FatManSimulator/
     FatManSimulator.Build.cs        Module deps
     FatManSimulator.{h,cpp}         Module entry point
+    JohnnyCar.{h,cpp}               The opening drivable car (arcade movement, scripted breakdown, possess-handoff)
     JohnnyCharacter.{h,cpp}         The fat man himself (Health/Stamina/Hunger, sprint, dodge, melee)
     JohnnyVoiceComponent.{h,cpp}    Self-hating commentary + food daydreams
     FoodPickup.{h,cpp}              Kebapi, burgers, gyros, burek, baklava, candy
@@ -90,7 +91,7 @@ Open `BP_Johnny` → assign all seven Input Actions and `IMC_Default` to the mat
 - Add a centered subtitle TextBlock, bind it to `Voice → OnLineSpoken`.
 
 ### 5. Build the first level
-- `Content/Maps/L_Skopje_Road.umap` — see `Docs/Levels.md` for the full level breakdown.
+- `Content/Maps/L_Skopje_Drive.umap` — opens with the playable driving scene, transitions to on-foot when the car breaks down. See `Docs/Levels.md` for the full level breakdown including the car setup checklist.
 
 ---
 

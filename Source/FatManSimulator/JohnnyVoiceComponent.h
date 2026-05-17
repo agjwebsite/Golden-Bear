@@ -21,7 +21,10 @@ enum class EJohnnyLine : uint8
 	GangsterTaunt,  // when chased
 	BossFires,      // story moment
 	Jackpot,        // gambling win
-	BrokeAgain      // ending
+	BrokeAgain,     // ending
+	CarSputter,     // engine misfire during the driving scene
+	CarDying,       // moment the sputtering starts
+	CarDeadResignation // when the car finally quits
 };
 
 USTRUCT(BlueprintType)

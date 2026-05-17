@@ -4,11 +4,24 @@ Story beats are tracked by `UStoryFlowSubsystem::EStoryBeat`. Each beat below is
 
 ---
 
-## L_Skopje_Road  *(CarBreakdown → OnTheRoad)*
+## L_Skopje_Drive  *(Driving → CarBreakdown → OnTheRoad)*
 
-**Opening cinematic** (Level Sequence): Johnny's old hatchback steams to a halt on the side of the road outside Skopje. He kicks the tire. The tire wins. Cut to gameplay.
+**Opening playable scene (~30–45 seconds of driving)**
 
-**Layout**: a 1–2 km linear stretch of country road and farmland between Skopje and Veles. Cliffs/forest on one side, fields on the other, so the player stays on the path.
+Johnny starts behind the wheel of his old hatchback (`AJohnnyCar`) on the road out of Skopje. Player drives forward with throttle/steer. After ~22 seconds (`TimeUntilSputter`), the engine starts misfiring — speed cuts in half on random coughs, exhaust smoke kicks on, Johnny pleads with the car. After another ~10 seconds (`SputterDuration`) the engine quits entirely. Short pause for a beat of comedy, then the player is automatically possessed into `BP_Johnny` standing next to the driver's door.
+
+**Setup checklist**:
+1. Create `BP_JohnnyCar` (parent: `JohnnyCar`). Assign a car static mesh and engine sound to its components.
+2. Create `IMC_Driving` and Input Actions `IA_Throttle` (Axis1D — W=+1, S=-1), `IA_Steer` (Axis1D — D=+1, A=-1), `IA_Look` (Mouse XY), `IA_Horn` (H key).
+3. Place one `BP_JohnnyCar` and one `BP_Johnny` in the level. On the car, set `DriverOnExit` to point at the Johnny actor.
+4. In **World Settings**, set the **Default Pawn Class** to `BP_JohnnyCar` (override for this map only — the rest of the levels use `BP_Johnny`).
+5. Place a hidden `BP_Johnny` somewhere reasonable; the car will teleport him to its driver-side door on breakdown.
+
+**Layout**: ~600m of straight-ish road out of Skopje with one or two gentle curves. Surround with low fences / forest so the player can't drive off into the void. The breakdown timing is wall-clock based so the player ends up roughly where you place them; tune `TimeUntilSputter` to match your level length, or call `ForceBreakdown()` from a trigger box if you want it to fire at a specific spot instead.
+
+**After the breakdown** — gameplay continues seamlessly in the same level:
+
+**Layout (on-foot section)**: a 1–2 km linear stretch of country road and farmland between Skopje and Veles. Cliffs/forest on one side, fields on the other, so the player stays on the path.
 
 **Population**:
 - 3–4 patches of stray dogs (`AEnemyBase`, melee, low HP — knocks Johnny's stamina around)
@@ -17,6 +30,8 @@ Story beats are tracked by `UStoryFlowSubsystem::EStoryBeat`. Each beat below is
 - Periodic voice-line zones (trigger boxes that call `Voice->Say(EJohnnyLine::FoodCraving)`)
 
 **Exit**: a trigger box at the city limits that sets the story beat to `GangsterChase` and seamlessly opens `L_Veles_Outskirts`.
+
+> Note: the on-foot section above lives in the **same** level as the driving section (`L_Skopje_Drive`). Keeping them in one map avoids the awkward load screen after the car dies.
 
 ---
 
