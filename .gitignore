@@ -1,0 +1,28 @@
+# Unreal Engine build artifacts and editor-generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+
+# Generated headers
+**/Source/**/*.generated.h
+**/Source/**/*.gen.cpp
+
+# Local-only files
+*.user
+*.DS_Store
+
+# Visual Studio
+.vs/
+
+# Rider
+.idea/
