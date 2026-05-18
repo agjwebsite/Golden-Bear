@@ -14,8 +14,12 @@ enum class EJohnnyLine : uint8
 	Exhausted,      // out of stamina
 	Starving,       // hunger at zero
 	Eating,         // restoring hunger
-	Dodge,          // dodge roll grunt
-	Attack,         // throwing a punch
+	Dodge,          // legacy: kept for save-game compat, no longer used
+	Parry,          // tight-window parry grunt
+	Attack,         // throwing a jab
+	Heavy,          // committing to a Belly Slam or Haymaker
+	ThrowFood,      // lobbing a kebapi at the dog
+	Finisher,       // stomping a downed enemy
 	Hurt,           // took damage
 	Death,          // health zero
 	GangsterTaunt,  // when chased

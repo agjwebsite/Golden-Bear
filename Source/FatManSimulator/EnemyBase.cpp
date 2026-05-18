@@ -24,13 +24,12 @@ void AEnemyBase::BeginPlay()
 void AEnemyBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (bDead) return;
+	if (bDead || bKnockedDown || bStaggered) return;
 
 	TimeSinceLastAttack += DeltaSeconds;
 
 	if (!Target.IsValid())
 	{
-		// Cheap line-of-sight check via distance — designers can swap in a proper PerceptionComponent later.
 		if (AJohnnyCharacter* Player = Cast<AJohnnyCharacter>(UGameplayStatics::GetPlayerPawn(this, 0)))
 		{
 			if (FVector::Dist(Player->GetActorLocation(), GetActorLocation()) <= SightRange)
@@ -66,6 +65,13 @@ void AEnemyBase::TryAttack()
 	if (TimeSinceLastAttack < AttackCooldown || !Target.IsValid()) return;
 	TimeSinceLastAttack = 0.f;
 
+	// Give Johnny a chance to parry this. If consumed, the parry will stagger us
+	// and trigger a Riposte — so we eat the cost and skip damage.
+	if (bAttacksAreParryable && Target->TryConsumeParry(this))
+	{
+		return;
+	}
+
 	FDamageEvent DamageEvent;
 	Target->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
 }
@@ -86,9 +92,51 @@ float AEnemyBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return Applied;
 }
 
+void AEnemyBase::ApplyKnockback(FVector Impulse, bool bKnockdown, float KnockdownDuration)
+{
+	if (bDead) return;
+	LaunchCharacter(Impulse, true, true);
+	if (bKnockdown && KnockdownDuration > 0.f)
+	{
+		bKnockedDown = true;
+		bStaggered = false;
+		GetCharacterMovement()->StopMovementImmediately();
+		GetWorldTimerManager().SetTimer(KnockdownTimer, this, &AEnemyBase::EndKnockdown, KnockdownDuration, false);
+	}
+}
+
+void AEnemyBase::EndKnockdown()
+{
+	bKnockedDown = false;
+}
+
+void AEnemyBase::Stagger(float Duration)
+{
+	if (bDead || bKnockedDown) return;
+	bStaggered = true;
+	GetCharacterMovement()->StopMovementImmediately();
+	GetWorldTimerManager().SetTimer(StaggerTimer, this, &AEnemyBase::EndStagger, Duration, false);
+}
+
+void AEnemyBase::EndStagger()
+{
+	bStaggered = false;
+}
+
+bool AEnemyBase::IsFinishable(float HpFraction) const
+{
+	if (bDead) return false;
+	if (bKnockedDown) return true;
+	if (MaxHealth > 0.f && Health / MaxHealth <= HpFraction) return true;
+	return false;
+}
+
 void AEnemyBase::OnDeath()
 {
 	bDead = true;
+	bKnockedDown = false;
+	bStaggered = false;
+	GetWorldTimerManager().ClearAllTimersForObject(this);
 	GetCharacterMovement()->DisableMovement();
 	SetLifeSpan(4.f);
 }

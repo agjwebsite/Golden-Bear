@@ -20,10 +20,11 @@ Source/
     FatManSimulator.Build.cs        Module deps
     FatManSimulator.{h,cpp}         Module entry point
     JohnnyCar.{h,cpp}               The opening drivable car (arcade movement, scripted breakdown, possess-handoff)
-    JohnnyCharacter.{h,cpp}         The fat man himself (Health/Stamina/Hunger, sprint, dodge, melee)
+    JohnnyCharacter.{h,cpp}         The fat man himself (meters, sprint, full combat suite)
     JohnnyVoiceComponent.{h,cpp}    Self-hating commentary + food daydreams
     FoodPickup.{h,cpp}              Kebapi, burgers, gyros, burek, baklava, candy
-    EnemyBase.{h,cpp}               Patrolling enemy with chase + melee AI
+    ThrownFood.{h,cpp}              Projectile food that slips greasy enemies or chips sweet damage
+    EnemyBase.{h,cpp}               Patrolling enemy with chase, melee, knockdown & finisher hooks
     GangsterEnemy.{h,cpp}           The loan-shark goons who taunt while chasing
     GamblingMachine.{h,cpp}         The rigged slot machine
     StoryFlowSubsystem.{h,cpp}      Tracks story beats + wallet + debt
@@ -68,21 +69,30 @@ The C++ defines all systems, but a few editor-side assets need to be created onc
 ### 3. Create Enhanced Input assets
 In `Content/Input/`:
 - **Input Mapping Context** → `IMC_Default`
-- **Input Actions**: `IA_Move` (Axis2D), `IA_Look` (Axis2D), `IA_Jump`, `IA_Sprint`, `IA_Dodge`, `IA_Attack`, `IA_Interact` (Digital bool)
+- **Input Actions** (Digital bool unless noted):
+  `IA_Move` (Axis2D), `IA_Look` (Axis2D), `IA_Jump`, `IA_Sprint`,
+  `IA_Attack`, `IA_Parry`, `IA_BellySlam`, `IA_Haymaker`, `IA_ThrowFood`, `IA_Interact`,
+  `IA_HotbarSlot1`…`IA_HotbarSlot5`.
 
 Wire bindings in `IMC_Default`:
 
-| Action       | Key                                |
-| ------------ | ---------------------------------- |
-| IA_Move      | WASD (with Swizzle/Negate as usual)|
-| IA_Look      | Mouse XY                           |
-| IA_Jump      | Space Bar                          |
-| IA_Sprint    | Left Shift                         |
-| IA_Dodge     | Left Ctrl                          |
-| IA_Attack    | Left Mouse Button                  |
-| IA_Interact  | E                                  |
+| Action          | Key                                   | What it does                                                  |
+| --------------- | ------------------------------------- | ------------------------------------------------------------- |
+| IA_Move         | WASD (with Swizzle/Negate as usual)   | Movement                                                      |
+| IA_Look         | Mouse XY                              | Camera                                                        |
+| IA_Jump         | Space Bar                             | Jump                                                          |
+| IA_Sprint       | Left Shift                            | Sprint (drains stamina)                                       |
+| IA_Attack       | Left Mouse Button                     | Light jab; chains into the 3-hit combo                        |
+| IA_Parry        | Right Mouse Button                    | Tight-window parry; success → free Riposte (Haymaker)         |
+| IA_BellySlam    | Q                                     | Heavy AOE knockback + knockdown                               |
+| IA_Haymaker     | F                                     | Heavy single-target staggering blow                           |
+| IA_ThrowFood    | G                                     | Lob the active hotbar food                                    |
+| IA_Interact     | E                                     | Interact / Finisher when prompt visible                       |
+| IA_HotbarSlot1…5| 1 / 2 / 3 / 4 / 5                     | Pick the active throwable slot                                |
 
-Open `BP_Johnny` → assign all seven Input Actions and `IMC_Default` to the matching `UPROPERTY` slots under category **Johnny|Input**.
+**Combo cancels:** after two light hits, press **Q** for a free Belly Slam or **F** for a free Haymaker — the heavy's wind-up is skipped.
+
+Open `BP_Johnny` → assign every Input Action and `IMC_Default` to the matching `UPROPERTY` slots under category **Johnny|Input**.
 
 ### 4. Create the HUD
 - `Content/UI/WBP_HUD` — Widget Blueprint with three progress bars labeled **HEALTH**, **STAMINA**, **HUNGER**.
@@ -101,8 +111,15 @@ All numbers are exposed as `EditDefaultsOnly` on `JohnnyCharacter`. Adjust them 
 
 - **Meters**: `MaxHealth/Stamina/Hunger`, decay/regen rates, starvation damage
 - **Speeds**: walk / sprint / exhausted (when stamina hits zero, Johnny waddles)
-- **Dodge**: impulse, duration, cooldown, stamina cost, i-frames are automatic for the dodge duration
-- **Melee**: damage, range, radius (sphere sweep), cooldown, stamina cost
+- **Light**: jab damage, hook damage (combo finisher), range, radius, cooldown, stamina cost, combo-reset window, hook knockback
+- **Belly Slam**: wind-up, recovery, AOE radius, damage, knockback, knockdown duration, stamina cost
+- **Haymaker**: wind-up, recovery, cone range/radius, damage, enemy stagger duration, stamina cost
+- **Parry**: window (~0.35s), whiff cooldown, parry-stagger duration on the attacker, Riposte damage multiplier
+- **Throwables**: thrown-food projectile class, throw cooldown, throw speed, hotbar size
+- **Finisher**: cone range/angle, low-HP threshold, Stomp damage, Eat hunger restore, "Eat instead of Stomp" hunger threshold, finisher duration
+- **Hunger-as-armor**: fed/hungry thresholds (fractions of MaxHunger) and the incoming-damage multipliers each band applies
+  - Fed (Hunger ≥ 75%): −25% incoming damage and super-armor frames on heavy wind-ups
+  - Hungry (Hunger ≤ 25%): +50% incoming damage and every hit flinches Johnny
 
 Voice lines are seeded with defaults in C++. To replace them, fill in the `LineSets` map on Johnny's `Voice` component in `BP_Johnny` — any entry you set there overrides the default.
 

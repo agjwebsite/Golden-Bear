@@ -59,7 +59,11 @@ void UJohnnyVoiceComponent::SeedDefaultLines()
 	}, 2.f);
 
 	AddIfMissing(EJohnnyLine::Dodge,        { TEXT("Hup!"), TEXT("Move!"), TEXT("Ow my knee."), }, 0.5f);
+	AddIfMissing(EJohnnyLine::Parry,        { TEXT("Hah!"), TEXT("Try me."), TEXT("Caught it."), }, 0.4f);
 	AddIfMissing(EJohnnyLine::Attack,       { TEXT("Take this!"), TEXT("Eat fist!"), TEXT("This is for my belly!"), }, 0.4f);
+	AddIfMissing(EJohnnyLine::Heavy,        { TEXT("RAARGH!"), TEXT("Belly says hello!"), TEXT("Come HERE."), }, 0.8f);
+	AddIfMissing(EJohnnyLine::ThrowFood,    { TEXT("Take my burek! TAKE IT!"), TEXT("Catch."), TEXT("This hurts me more than you."), }, 0.6f);
+	AddIfMissing(EJohnnyLine::Finisher,     { TEXT("Stay DOWN."), TEXT("That's enough out of you."), TEXT("Should've stayed home."), }, 0.8f);
 	AddIfMissing(EJohnnyLine::Hurt,         { TEXT("Aagh!"), TEXT("Not the face!"), TEXT("Why is this happening to me..."), }, 0.6f);
 	AddIfMissing(EJohnnyLine::Death,        { TEXT("Tell them... I tried..."), }, 999.f);
 	AddIfMissing(EJohnnyLine::GangsterTaunt,{ TEXT("I'll get the money! I swear!"), TEXT("Just one more week!"), }, 3.f);

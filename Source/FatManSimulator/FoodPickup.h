@@ -31,6 +31,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Food") float HealthRestore = 10.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Food") bool bRequireInteractKey = false;
 
+	// If true (default), pickup is stashed in Johnny's throwable hotbar instead of
+	// being eaten on contact. Falls back to eating when his hunger is below
+	// EmergencyEatThreshold or when the hotbar is full.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Food") bool bGoesToHotbar = true;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Food") float EmergencyEatHungerFraction = 0.25f;
+
 	UPROPERTY(VisibleAnywhere) USphereComponent* Trigger = nullptr;
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Mesh = nullptr;
 

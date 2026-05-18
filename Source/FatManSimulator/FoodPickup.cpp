@@ -22,10 +22,21 @@ AFoodPickup::AFoodPickup()
 void AFoodPickup::OnBeginOverlap(UPrimitiveComponent*, AActor* Other,
                                  UPrimitiveComponent*, int32, bool, const FHitResult&)
 {
-	if (bRequireInteractKey) return;  // designer can opt in to manual pickup
-	if (AJohnnyCharacter* Johnny = Cast<AJohnnyCharacter>(Other))
+	if (bRequireInteractKey) return;
+	AJohnnyCharacter* Johnny = Cast<AJohnnyCharacter>(Other);
+	if (!Johnny) return;
+
+	const bool bIsStarving = Johnny->MaxHunger > 0.f &&
+	                         Johnny->Hunger / Johnny->MaxHunger <= EmergencyEatHungerFraction;
+
+	bool bHandled = false;
+	if (bGoesToHotbar && !bIsStarving)
+	{
+		bHandled = Johnny->AddFoodToHotbar(FoodType, 1);
+	}
+	if (!bHandled)
 	{
 		Johnny->EatFood(HungerRestore, HealthRestore);
-		Destroy();
 	}
+	Destroy();
 }
