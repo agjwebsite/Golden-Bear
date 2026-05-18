@@ -131,6 +131,11 @@ void AJohnnyCharacter::TickMeters(float DeltaSeconds)
 	}
 	if (!FMath::IsNearlyEqual(OldHealth, Health)) OnHealthChanged.Broadcast(Health / MaxHealth);
 
+	if (Voice && Health > 0.f && MaxHealth > 0.f && Health / MaxHealth <= 0.3f)
+	{
+		Voice->MaybeSayWhileLowHealth(DeltaSeconds);
+	}
+
 	if (Health <= 0.f && State != EJohnnyState::Dead) Die();
 }
 
@@ -292,7 +297,11 @@ void AJohnnyCharacter::OnThrowFood(const FInputActionValue&)
 	if (!ThrownFoodClass) return;
 
 	EFoodType FoodType;
-	if (!ConsumeActiveHotbarFood(FoodType)) return;
+	if (!ConsumeActiveHotbarFood(FoodType))
+	{
+		if (Voice) Voice->Say(EJohnnyLine::HotbarEmpty);
+		return;
+	}
 
 	TimeSinceLastThrow = 0.f;
 
@@ -619,6 +628,8 @@ void AJohnnyCharacter::EndHeavyRecovery()
 
 void AJohnnyCharacter::EndParryWindow()
 {
+	// If we got here, the window expired without TryConsumeParry firing — that's a whiff.
+	if (bInParryWindow && Voice) Voice->Say(EJohnnyLine::ParryWhiff);
 	bInParryWindow = false;
 	if (State == EJohnnyState::Parrying) State = EJohnnyState::Walking;
 }

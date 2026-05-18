@@ -16,11 +16,14 @@ enum class EJohnnyLine : uint8
 	Eating,         // restoring hunger
 	Dodge,          // legacy: kept for save-game compat, no longer used
 	Parry,          // tight-window parry grunt
+	ParryWhiff,     // pressed parry, window expired without absorbing a hit
 	Attack,         // throwing a jab
 	Heavy,          // committing to a Belly Slam or Haymaker
 	ThrowFood,      // lobbing a kebapi at the dog
+	HotbarEmpty,    // tried to throw with nothing in the pack
 	Finisher,       // stomping a downed enemy
 	Hurt,           // took damage
+	LowHealth,      // periodic panic when health is dangerously low
 	Death,          // health zero
 	GangsterTaunt,  // when chased
 	BossFires,      // story moment
@@ -61,12 +64,14 @@ public:
 
 	void MaybeSayWhileSprinting(float DeltaSeconds);
 	void MaybeSayWhileStarving(float DeltaSeconds);
+	void MaybeSayWhileLowHealth(float DeltaSeconds);
 
 protected:
 	virtual void BeginPlay() override;
 	void SeedDefaultLines();
 
 	TMap<EJohnnyLine, float> LastSpokenTime;
-	float SprintTalkAccumulator   = 0.f;
-	float StarvingTalkAccumulator = 0.f;
+	float SprintTalkAccumulator    = 0.f;
+	float StarvingTalkAccumulator  = 0.f;
+	float LowHealthTalkAccumulator = 0.f;
 };
